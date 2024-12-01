@@ -1,0 +1,60 @@
+CREATE TABLE users (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  deleted_at TIMESTAMP NULL,
+  username VARCHAR(50) UNIQUE NOT NULL,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  first_name VARCHAR(50) NULL,
+  last_name VARCHAR(50) NULL,
+  bio TEXT NULL,
+  profile_picture TEXT NULL,
+  role VARCHAR(50) DEFAULT 'user' NOT NULL,
+  last_login TIMESTAMP NULL,
+  is_active BOOLEAN DEFAULT TRUE,
+  verified_at TIMESTAMP NULL,
+  twitter_handle VARCHAR(255) NULL,
+  linkedin_profile VARCHAR(255) NULL,
+  personal_website VARCHAR(255) NULL
+);
+
+CREATE TABLE posts (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  deleted_at TIMESTAMP NULL,
+  title VARCHAR(200) NOT NULL,
+  slug VARCHAR(255) UNIQUE NOT NULL,
+  content TEXT NOT NULL,
+  excerpt TEXT NULL,
+  user_id BIGINT NOT NULL,
+  published_at TIMESTAMP NOT NULL,
+  status VARCHAR(50) DEFAULT 'draft' NOT NULL,
+  tags TEXT[] NULL,
+  view_count INT DEFAULT 0 NOT NULL,
+  like_count INT DEFAULT 0 NOT NULL,
+  comment_count INT DEFAULT 0 NOT NULL,
+  featured_image TEXT NULL,
+  meta_title VARCHAR(60) NULL,
+  meta_description VARCHAR(160) NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE comments (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  deleted_at TIMESTAMP NULL,
+  content TEXT NOT NULL,
+  user_id BIGINT NOT NULL,
+  post_id BIGINT NOT NULL,
+  parent_id BIGINT NULL,
+  status VARCHAR(50) DEFAULT 'published' NOT NULL,
+  like_count INT DEFAULT 0 NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (post_id) REFERENCES posts(id),
+  FOREIGN KEY (parent_id) REFERENCES comments(id)
+);
+
+CREATE INDEX idx_comments_parent_id ON comments (parent_id);

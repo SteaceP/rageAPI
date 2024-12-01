@@ -1,0 +1,43 @@
+# Server Configuration
+server:
+  port: 8080
+  environment: development  # Can be development, staging, or production
+
+# Database Configuration
+database:
+  type: postgres
+  host: localhost
+  port: 5433
+  name: blogdb
+  user: bloguser
+  password: yourpassword
+
+# JWT Authentication Configuration
+jwt:
+  secret: your-very-secret-and-long-random-key //? openssl rand -hex 32
+  expiration_hours: 24
+
+# CORS Configuration
+cors:
+  allowed_origins:
+    - http://localhost:3000
+    - http://localhost:5173
+    - http://locahost:8080
+
+# Logging Configuration
+logging:
+  level: debug  # can be debug, info, warn, error //! Only debug and info are configured right now
+  output_path: 
+    - stdout
+    - ./logs/app.log
+
+# Feature Flags
+features:
+  comments_enabled: true
+  user_registration: true
+
+# Email Configuration (if you plan to add email features)
+email:
+  smtp_host: smtp.yourprovider.com
+  smtp_port: 587
+  sender_email: noreply@yourdomain.com
