@@ -7,14 +7,13 @@ import (
 	"strconv"
 
 	"github.com/SteaceP/coderage/internal/models"
+	"github.com/SteaceP/coderage/pkg/types"
 	"github.com/SteaceP/coderage/pkg/utils"
-	"go.uber.org/zap"
 
 	"github.com/gorilla/mux"
 	"gorm.io/gorm"
 )
 
-// CreatePostRequest represents the structure for creating a new post
 type CreatePostRequest struct {
 	Title   string `json:"title"`
 	Content string `json:"content"`
@@ -22,9 +21,27 @@ type CreatePostRequest struct {
 
 func CreatePost(w http.ResponseWriter, r *http.Request) {
 	// Get user ID from context
-	userID, ok := r.Context().Value("user_id").(uint)
+	userID, ok := r.Context().Value(types.KeyUserID).(uint)
 	if !ok {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+	// Get database from context
+	db, ok := r.Context().Value(types.KeyDB).(*gorm.DB)
+	if !ok || db == nil {
+		http.Error(w, "Internal Server Error (Database unavailable)", http.StatusInternalServerError)
+		return
+	}
+	// Check user role
+	var user models.User
+	if err := db.First(&user, userID).Error; err != nil {
+		http.Error(w, "User not found", http.StatusUnauthorized)
+		return
+	}
+
+	// Check if user is an admin
+	if user.Role != types.RoleAdmin {
+		http.Error(w, "Forbidden: Only admins can create posts", http.StatusForbidden)
 		return
 	}
 
@@ -40,21 +57,6 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Get database from context
-	db, ok := r.Context().Value("db").(*gorm.DB)
-	if !ok || db == nil {
-		http.Error(w, "Internal Server Error (Database unavailable)", http.StatusInternalServerError)
-		return
-	}
-
-	logger, ok := r.Context().Value("logger").(*zap.Logger)
-	if !ok || logger == nil {
-		http.Error(w, "Internal Server Error (Logger unavailable)", http.StatusInternalServerError)
-		return
-	}
-
-	logger.Info("Creating a new post", zap.String("title", req.Title))
-
 	// Create post
 	post := models.Post{
 		Title:   req.Title,
@@ -63,7 +65,6 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := db.Create(&post).Error; err != nil {
-		logger.Error("Failed to create post", zap.Error(err))
 		http.Error(w, "Post creation failed", http.StatusInternalServerError)
 		return
 	}
@@ -82,14 +83,13 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	if err := json.NewEncoder(w).Encode(response); err != nil {
-		logger.Error("Failed to encode response", zap.Error(err))
 		http.Error(w, "Response encoding failed", http.StatusInternalServerError)
 	}
 }
 
 func ListPosts(w http.ResponseWriter, r *http.Request) {
 	// Get database from context
-	db, ok := r.Context().Value("db").(*gorm.DB)
+	db, ok := r.Context().Value(types.KeyDB).(*gorm.DB)
 	if !ok {
 		http.Error(w, "Internal Server Error (Database unavailable)", http.StatusInternalServerError)
 		return
@@ -141,7 +141,7 @@ func ListPosts(w http.ResponseWriter, r *http.Request) {
 // GetPost retrieves a single post by ID, including the user and comments.
 func GetPost(w http.ResponseWriter, r *http.Request) {
 	// Get database from context
-	db := r.Context().Value("db").(*gorm.DB)
+	db := r.Context().Value(types.KeyDB).(*gorm.DB)
 	if db == nil {
 		http.Error(w, "Internal Server Error (Database unavailable)", http.StatusInternalServerError)
 		return
@@ -149,7 +149,7 @@ func GetPost(w http.ResponseWriter, r *http.Request) {
 
 	// Get post ID from URL
 	vars := mux.Vars(r)
-	postID, err := strconv.ParseUint(vars["id"], 10, 64)
+	postID, err := strconv.ParseUint(vars[types.IDField], 10, 64)
 	if err != nil {
 		http.Error(w, "Invalid post ID", http.StatusBadRequest)
 		return
@@ -174,18 +174,18 @@ func GetPost(w http.ResponseWriter, r *http.Request) {
 
 func UpdatePost(w http.ResponseWriter, r *http.Request) {
 	// Get user ID from context
-	userID := r.Context().Value("user_id").(uint)
+	userID := r.Context().Value(types.KeyUserID).(uint)
 
 	// Get post ID from URL
 	vars := mux.Vars(r)
-	postID, err := strconv.ParseUint(vars["id"], 10, 64)
+	postID, err := strconv.ParseUint(vars[types.IDField], 10, 64)
 	if err != nil {
 		http.Error(w, "Invalid post ID", http.StatusBadRequest)
 		return
 	}
 
 	// Get database from context
-	db := r.Context().Value("db").(*gorm.DB)
+	db := r.Context().Value(types.KeyDB).(*gorm.DB)
 	if db == nil {
 		http.Error(w, "Internal Server Error (Database unavailable)", http.StatusInternalServerError)
 		return
@@ -241,18 +241,18 @@ func UpdatePost(w http.ResponseWriter, r *http.Request) {
 
 func DeletePost(w http.ResponseWriter, r *http.Request) {
 	// Get user ID from context
-	userID := r.Context().Value("user_id").(uint)
+	userID := r.Context().Value(types.KeyUserID).(uint)
 
 	// Get post ID from URL
 	vars := mux.Vars(r)
-	postID, err := strconv.ParseUint(vars["id"], 10, 64)
+	postID, err := strconv.ParseUint(vars[types.IDField], 10, 64)
 	if err != nil {
 		http.Error(w, "Invalid post ID", http.StatusBadRequest)
 		return
 	}
 
 	// Get database from context
-	db, ok := r.Context().Value("db").(*gorm.DB)
+	db, ok := r.Context().Value(types.KeyDB).(*gorm.DB)
 	if !ok {
 		http.Error(w, "Internal Server Error (Database unavailable)", http.StatusInternalServerError)
 		return

@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/SteaceP/coderage/pkg/types"
 	"github.com/SteaceP/coderage/pkg/utils"
 	"gorm.io/gorm"
 
@@ -49,8 +50,9 @@ func AuthMiddleware(db *gorm.DB) func(http.HandlerFunc) http.HandlerFunc {
 				return
 			}
 
+			//TODO: Make sure this is correct, all with the next else if.
 			// Validate user ID
-			userIDFloat, ok := claims["user_id"]
+			userIDFloat, ok := claims[types.UserID]
 			if !ok {
 				http.Error(w, "Invalid user ID in token", http.StatusUnauthorized)
 				return
