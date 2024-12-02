@@ -3,7 +3,7 @@ package repositories
 import (
 	"strings"
 
-	"github.com/SteaceP/coderage/internal/models"
+	"github.com/SteaceP/coderage/models"
 	"gorm.io/gorm"
 )
 

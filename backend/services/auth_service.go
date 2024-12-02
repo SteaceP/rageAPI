@@ -4,9 +4,9 @@ import (
 	"errors"
 	"time"
 
-	"github.com/SteaceP/coderage/internal/models"
-	"github.com/SteaceP/coderage/internal/repositories"
-	"github.com/SteaceP/coderage/pkg/utils"
+	"github.com/SteaceP/coderage/models"
+	"github.com/SteaceP/coderage/repositories"
+	"github.com/SteaceP/coderage/utils"
 
 	"github.com/golang-jwt/jwt"
 	"github.com/google/uuid"

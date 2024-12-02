@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/SteaceP/coderage/internal/models"
-	"github.com/SteaceP/coderage/pkg/types"
-	"github.com/SteaceP/coderage/pkg/utils"
+	"github.com/SteaceP/coderage/models"
+	"github.com/SteaceP/coderage/types"
+	"github.com/SteaceP/coderage/utils"
 
 	"gorm.io/gorm"
 )

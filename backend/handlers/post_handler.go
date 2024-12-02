@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/SteaceP/coderage/internal/models"
-	"github.com/SteaceP/coderage/pkg/types"
-	"github.com/SteaceP/coderage/pkg/utils"
+	"github.com/SteaceP/coderage/models"
+	"github.com/SteaceP/coderage/types"
+	"github.com/SteaceP/coderage/utils"
 
 	"github.com/gorilla/mux"
 	"gorm.io/gorm"

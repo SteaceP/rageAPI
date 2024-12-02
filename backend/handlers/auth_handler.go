@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/SteaceP/coderage/internal/models"
-	"github.com/SteaceP/coderage/pkg/utils"
+	"github.com/SteaceP/coderage/models"
+	"github.com/SteaceP/coderage/utils"
 
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"

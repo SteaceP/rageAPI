@@ -3,8 +3,8 @@ package repositories
 import (
 	"time"
 
-	"github.com/SteaceP/coderage/internal/models"
-	"github.com/SteaceP/coderage/pkg/utils"
+	"github.com/SteaceP/coderage/models"
+	"github.com/SteaceP/coderage/utils"
 	"gorm.io/gorm"
 )
 

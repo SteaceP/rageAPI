@@ -9,10 +9,10 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/SteaceP/coderage/internal/config"
-	"github.com/SteaceP/coderage/internal/database"
-	"github.com/SteaceP/coderage/internal/handlers"
-	"github.com/SteaceP/coderage/pkg/middleware"
+	"github.com/SteaceP/coderage/config"
+	"github.com/SteaceP/coderage/database"
+	"github.com/SteaceP/coderage/handlers"
+	"github.com/SteaceP/coderage/middleware"
 
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"

@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/SteaceP/coderage/pkg/types"
-	"github.com/SteaceP/coderage/pkg/utils"
+	"github.com/SteaceP/coderage/types"
+	"github.com/SteaceP/coderage/utils"
 	"gorm.io/gorm"
 
 	"github.com/golang-jwt/jwt"

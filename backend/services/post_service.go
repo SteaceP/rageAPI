@@ -4,8 +4,8 @@ import (
 	"errors"
 	"time"
 
-	"github.com/SteaceP/coderage/internal/models"
-	"github.com/SteaceP/coderage/internal/repositories"
+	"github.com/SteaceP/coderage/models"
+	"github.com/SteaceP/coderage/repositories"
 	"go.uber.org/zap"
 )
 
