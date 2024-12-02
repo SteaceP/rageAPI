@@ -59,13 +59,13 @@ func main() {
 	server.setupRoutes()
 
 	// Configure CORS
-	// corsHandler := middleware.ConfigureCORS()
+	corsHandler := middleware.ConfigureCORS().Handler(server.router)
 
 	// HTTP Server configuration
 	port := viper.GetString("server.port")
 	httpServer := &http.Server{
 		Addr:         ":" + port,
-		Handler:      middleware.LoggingMiddleware(logger)(server.router),
+		Handler:      middleware.LoggingMiddleware(logger)(corsHandler),
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 15 * time.Second,
 		IdleTimeout:  120 * time.Second,
@@ -101,12 +101,12 @@ func (s *Server) setupRoutes() {
 	s.router.Use(middleware.Database(s.db))
 	// User routes
 	s.router.HandleFunc("/users", handlers.CreateUser).Methods("POST")
-	s.router.HandleFunc("/users/login", middleware.AuthMiddleware(s.db)(handlers.Login)).Methods("POST")
+	s.router.HandleFunc("/users/login", handlers.Login).Methods("POST")
 	s.router.HandleFunc("/users/profile", middleware.AuthMiddleware(s.db)(handlers.GetUserProfile)).Methods("GET")
 
 	// Post routes
-	s.router.HandleFunc("/posts", middleware.AuthMiddleware(s.db)(handlers.CreatePost)).Methods("POST")
 	s.router.HandleFunc("/posts", handlers.ListPosts).Methods("GET")
+	s.router.HandleFunc("/posts", middleware.AuthMiddleware(s.db)(handlers.CreatePost)).Methods("POST")
 	s.router.HandleFunc("/posts/{id}", handlers.GetPost).Methods("GET")
 	s.router.HandleFunc("/posts/{id}", middleware.AuthMiddleware(s.db)(handlers.UpdatePost)).Methods("PUT")
 	s.router.HandleFunc("/posts/{id}", middleware.AuthMiddleware(s.db)(handlers.DeletePost)).Methods("DELETE")

@@ -72,6 +72,36 @@ func ValidateJWTToken(tokenString string) (*jwt.Token, error) {
 	return nil, fmt.Errorf("invalid token")
 }
 
+// RefreshJWTToken refreshes a given JWT, issuing a new one with an updated expiry.
+// It validates the old token first and extracts the user ID.
+func RefreshJWTToken(tokenString string) (string, error) {
+	// Validate the existing token
+	token, err := ValidateJWTToken(tokenString)
+	if err != nil {
+		return "", fmt.Errorf("invalid token: %w", err) // Wrap error for more context
+	}
+
+	// Extract user ID from claims
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return "", fmt.Errorf("invalid token claims")
+	}
+
+	userIDF, ok := claims["user_id"].(float64)
+	if !ok {
+		return "", fmt.Errorf("invalid user ID in token")
+	}
+	userID := uint(userIDF)
+
+	// Generate a new token with the same user ID
+	newToken, err := GenerateJWTToken(userID)
+	if err != nil {
+		return "", fmt.Errorf("failed to generate new token: %w", err) // Wrap error
+	}
+
+	return newToken, nil
+}
+
 // UintToString safely converts a uint to a string.
 func UintToString(id uint) string {
 	return strconv.FormatUint(uint64(id), 10)
